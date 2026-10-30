@@ -1,0 +1,6 @@
+{
+  "name": "Absensi Kelas 10 Siswa",
+  "description": "Aplikasi absensi siswa sederhana dan cepat untuk 1 kelas dengan 10 siswa, sinkronisasi realtime, dan rekap kehadiran.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

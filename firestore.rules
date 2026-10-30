@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 64 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidDateId(id) {
+      return id is string && id.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    function isValidStudent(data) {
+      return data.keys().hasAll(['rollNo', 'name'])
+        && data.keys().hasOnly(['rollNo', 'name', 'gender', 'active', 'updatedAt'])
+        && data.rollNo is number
+        && data.rollNo >= 1 && data.rollNo <= 100
+        && data.name is string
+        && data.name.size() > 0 && data.name.size() <= 100
+        && (!('gender' in data) || data.gender in ['L', 'P'])
+        && (!('active' in data) || data.active is bool)
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidAttendance(data) {
+      return data.keys().hasAll(['date', 'records'])
+        && data.keys().hasOnly(['date', 'records', 'notes', 'updatedAt'])
+        && data.date is string
+        && data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.records is map
+        && (!('notes' in data) || data.notes is map)
+        && (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    match /students/{studentId} {
+      allow read: if isValidId(studentId);
+      allow create, update: if isValidId(studentId) && isValidStudent(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /attendance_days/{dateId} {
+      allow read: if isValidDateId(dateId);
+      allow create, update: if isValidDateId(dateId) && isValidAttendance(request.resource.data);
+      allow delete: if isValidDateId(dateId);
+    }
+  }
+}

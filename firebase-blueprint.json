@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Data siswa dalam kelas",
+      "type": "object",
+      "properties": {
+        "rollNo": {
+          "type": "number",
+          "description": "Nomor urut absen siswa (1-10)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Nama lengkap siswa",
+          "maxLength": 100
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["L", "P"],
+          "description": "Jenis kelamin"
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Status keaktifan siswa"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Waktu pembaruan data"
+        }
+      },
+      "required": ["rollNo", "name"]
+    },
+    "AttendanceDay": {
+      "title": "AttendanceDay",
+      "description": "Data absensi harian kelas untuk 10 siswa",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "Tanggal absensi YYYY-MM-DD"
+        },
+        "records": {
+          "type": "object",
+          "description": "Peta status absensi siswa (hadir, izin, sakit, alpa)"
+        },
+        "notes": {
+          "type": "object",
+          "description": "Peta catatan absensi per siswa"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Waktu pembaruan rekaman absensi"
+        }
+      },
+      "required": ["date", "records"]
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Data 10 siswa dalam kelas"
+    },
+    "/attendance_days/{dateId}": {
+      "schema": "AttendanceDay",
+      "description": "Rekapitulasi absensi harian siswa berdasarkan tanggal"
+    }
+  }
+}
